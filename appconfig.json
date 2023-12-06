@@ -1,0 +1,8 @@
+{
+    "Mp3Library": {
+      "SourcePath": "C:\\Your\\Source\\Path",
+      "DestinationRoot": "D:\\Your\\Destination\\Root",
+      "FolderStructureTags": ["AlbumArtist", "Album", "Track", "Title"]
+    }
+}
+  

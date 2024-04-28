@@ -19,8 +19,9 @@ Set options by quality (min 192kbps) and Tags completeness.
 
 ## Use
 
-dotnet run <source folder location> <destination folder location>
-
+``
+>/mulib/mulib dotnet run <source folder path> <destination folder path>
+``
 ## Future Improvements
 
 - appconfiguration file

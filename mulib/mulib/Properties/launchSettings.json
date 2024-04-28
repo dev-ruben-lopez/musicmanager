@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "mulib": {
+      "commandName": "Project",
+      "commandLineArgs": "Y:\\mulib\\music\\\r\nY:\\mulib\\music\\\\result\\"
+    }
+  }
+}

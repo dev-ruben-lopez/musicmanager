@@ -26,4 +26,5 @@ Set options by quality (min 192kbps) and Tags completeness.
 
 - appconfiguration file
 - Allow to enter options by command line.
+- A simple Avalonia UI that allows me to set Source(s), Destination, and structure of folders using any combination of <artist> <album artist> <genre> <compilation>
 

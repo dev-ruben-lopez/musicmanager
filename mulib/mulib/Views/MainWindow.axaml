@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="https://github.com/avaloniaui/designtime"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="MusicLibrary.Views.MainWindow"
+        Title="Music Library Organizer"
+        Width="600" Height="400"
+        DataContext="{Binding MainWindowViewModel, Mode=OneTime}">
+
+  <StackPanel Margin="10" Spacing="10">
+    <!-- Title -->
+    <TextBlock Text="Music Library Organizer" FontSize="20" HorizontalAlignment="Center" Margin="0,10"/>
+
+    <!-- File Explorer Controls -->
+    <StackPanel>
+      <TextBlock Text="Files Source:" Margin="0,5"/>
+      <TextBox Text="{Binding SourceFolderPath, Mode=TwoWay}" IsReadOnly="True"/>
+      <Button Content="Select Source Folder" Command="{Binding SelectSourceFolderCommand}" HorizontalAlignment="Left" Margin="0,5"/>
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock Text="Files Destination:" Margin="0,5"/>
+      <TextBox Text="{Binding DestinationFolderPath, Mode=TwoWay}" IsReadOnly="True"/>
+      <Button Content="Select Destination Folder" Command="{Binding SelectDestinationFolderCommand}" HorizontalAlignment="Left" Margin="0,5"/>
+    </StackPanel>
+
+    <!-- Execute Button -->
+    <Button Content="Organize Music Files" Command="{Binding ExecuteLibraryCallCommand}" HorizontalAlignment="Center" Margin="0,20"/>
+
+    <!-- Loading Indicator -->
+    <TextBlock Text="Processing..." Foreground="Red" FontSize="14" HorizontalAlignment="Center" IsVisible="{Binding IsLoading}" />
+
+    <!-- Execution Result -->
+    <TextBlock Text="{Binding ExecutionResult}" FontSize="14" HorizontalAlignment="Center" Foreground="{Binding ExecutionResultColor}" Margin="10"/>
+  </StackPanel>
+</Window>

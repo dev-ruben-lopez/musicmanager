@@ -2,24 +2,28 @@
 using System.IO;
 using TagLib;
 using Spectre.Console;
+using Microsoft.Extensions.Logging;
 
- 
+
 namespace mulibLibrary
 {
     public class MP3FileManager
     {
         //cons
-        private string[] Extensions = new string[] {".mp3",".m4a", ".flac"};
+        private string[] _extensions = new string[] {".mp3",".m4a", ".flac"};
         
         // Properties
-        public string SourceFolder { get; set; }
-        public string DestinationFolder { get; set; }
+        private string _sourceFolder { get; set; }
+        private string _destinationFolder { get; set; }
+
+        private ILoggerFactory _logger { get; set; }
 
         // Constructor
-        public MP3FileManager(string sourceFolder, string destinationFolder)
+        public MP3FileManager(string sourceFolder, string destinationFolder, ILoggerFactory logger)
         {
-            SourceFolder = sourceFolder;
-            DestinationFolder = destinationFolder;
+            _sourceFolder = sourceFolder;
+            _destinationFolder = destinationFolder;
+            _logger = logger;
         }
 
         /// <summary>
@@ -52,12 +56,10 @@ namespace mulibLibrary
         {
             try
             {
-                if (!Extensions.Contains(Path.GetExtension(fileName)))
+                if (!_extensions.Contains(Path.GetExtension(fileName)))
                 {
                     return;
                 }
-
-                //string destinationFilePath = Path.Combine(DestinationFolder, Path.GetFileName(fileName));
 
                 if (IsAudioFileValid(fileName))
                 {
@@ -67,10 +69,7 @@ namespace mulibLibrary
                     string performer = audioFile.Tag.Performers.FirstOrDefault().ToString();
                     string album = audioFile.Tag.Album;
 
-                    //Change the extension to mp3
-                    //string destinationFileName = Path.ChangeExtension(Path.GetFileName(fileName), ".mp3");
-
-                    string destinationDirectory = Path.Combine(DestinationFolder, performer, album);
+                    string destinationDirectory = Path.Combine(_destinationFolder, performer, album);
                     Directory.CreateDirectory(destinationDirectory);
 
                     // Copy file to destination directory
@@ -80,18 +79,18 @@ namespace mulibLibrary
 
                     System.IO.File.Copy(fileName, Path.Combine(destinationDirectory, fileFilteredNameOnly), true);
 
-                    EzLogger.Log($"File {fileFilteredNameOnly} copied.", EzLogger.MessageType.INFO);
+                    EzLogger.Log($"File {fileFilteredNameOnly} copied.", EzLogger.MessageType.INFO, _logger);
 
 
                 }
                 else
                 {
-                    EzLogger.Log($"File {fileName} does not meet the conditions and was not copied.", EzLogger.MessageType.WARNING);
+                    EzLogger.Log($"File {fileName} does not meet the conditions and was not copied.", EzLogger.MessageType.WARNING, _logger);
                 }
             }
             catch(Exception)
             {
-                EzLogger.Log($"File {fileName} does not meet the conditions and was not copied.", EzLogger.MessageType.WARNING);
+                EzLogger.Log($"File {fileName} does not meet the conditions and was not copied.", EzLogger.MessageType.WARNING, _logger);
             }
 
         }
@@ -113,7 +112,7 @@ namespace mulibLibrary
             }
             catch (Exception ex)
             {
-                EzLogger.Log($"An error occurred: {ex.Message}", EzLogger.MessageType.ERROR);
+                EzLogger.Log($"An error occurred: {ex.Message}", EzLogger.MessageType.ERROR, _logger);
             }
         }
 
@@ -128,7 +127,7 @@ namespace mulibLibrary
                 Dictionary<string, List<string>> playLists = new Dictionary<string, List<string>>();
                 
                 // Get MP3 files in destination directory
-                foreach (string file in Directory.GetFiles(DestinationFolder, "*.*", SearchOption.AllDirectories))
+                foreach (string file in Directory.GetFiles(_destinationFolder, "*.*", SearchOption.AllDirectories))
                 {
                     try
                     {
@@ -181,7 +180,7 @@ namespace mulibLibrary
                     }
                     catch(Exception ex) 
                     {
-                        EzLogger.Log($"An error occurred: {ex.Message}", EzLogger.MessageType.ERROR);
+                        EzLogger.Log($"An error occurred: {ex.Message}", EzLogger.MessageType.ERROR, _logger);
                     }
 
                 }
@@ -189,7 +188,7 @@ namespace mulibLibrary
                 // Write playlists to files
                 foreach (var kvp in playLists)
                 {
-                    string playlistFilePath = Path.Combine(DestinationFolder, $"{kvp.Key}.m3u");
+                    string playlistFilePath = Path.Combine(_destinationFolder, $"{kvp.Key}.m3u");
                     using (StreamWriter writer = new StreamWriter(playlistFilePath,true))
                     {
                         foreach (string filePath in kvp.Value)
@@ -197,12 +196,12 @@ namespace mulibLibrary
                             writer.WriteLine(filePath);
                         }
                     }
-                    EzLogger.Log($"Playlist for {kvp.Key} created: {playlistFilePath}", EzLogger.MessageType.INFO);
+                    EzLogger.Log($"Playlist for {kvp.Key} created: {playlistFilePath}", EzLogger.MessageType.INFO, _logger);
                 }
             }
             catch (Exception ex)
             {
-                EzLogger.Log($"An error occurred: {ex.Message}", EzLogger.MessageType.ERROR);
+                EzLogger.Log($"An error occurred: {ex.Message}", EzLogger.MessageType.ERROR , _logger);
             }
         }
 
@@ -221,8 +220,13 @@ namespace mulibLibrary
 
     public static class EzLogger
     {
-        public static void Log(string message, MessageType type)
+        private static ILoggerFactory _logger;
+
+        public static void Log(string message, MessageType type, ILoggerFactory logger)
         {
+            _logger = logger;
+            _logger.CreateLogger<MP3FileManager>();
+
             try
             {
                 switch (type)

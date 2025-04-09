@@ -1,0 +1,41 @@
+public class ComparisonCacheEntry
+{
+    public int Iteration { get; set; }
+    public string FieldName { get; set; }
+    public object Value { get; set; }
+
+    public override string ToString() =>
+        $"[Iteration: {Iteration}, Field: {FieldName}, Value: {Value}]";
+}
+
+public static class CacheStore
+{
+    private static readonly List<ComparisonCacheEntry> _entries = new();
+
+    public static void Add(ComparisonCacheEntry entry) => _entries.Add(entry);
+
+    public static IReadOnlyList<ComparisonCacheEntry> GetAll() => _entries.AsReadOnly();
+
+    public static void Clear() => _entries.Clear();
+}
+
+
+// Add
+CacheStore.Add(new ComparisonCacheEntry
+{
+    Iteration = 1,
+    FieldName = "Age",
+    Value = 25
+});
+
+// Retrieve later
+foreach (var entry in CacheStore.GetAll())
+{
+    Console.WriteLine(entry);
+}
+
+// Clear after use
+CacheStore.Clear();
+
+
+
